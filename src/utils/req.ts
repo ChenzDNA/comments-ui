@@ -16,7 +16,9 @@ export default async function req(config: AxiosRequestConfig, type: ContentType<
     return value.data
   })
 
-  config.data = type.resolve(config.data)
+  if (config.method!.toUpperCase() !== 'GET') {
+    config.data = type.resolve(config.data)
+  }
 
   return await instance(config)
 }
