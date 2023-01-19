@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import UserHeader from './components/UserHeader.vue'
+import { NMessageProvider } from 'naive-ui'
 
 if (window.parent !== window) {
   function loop() {
@@ -14,9 +15,11 @@ if (window.parent !== window) {
 </script>
 
 <template>
-  <Suspense>
-    <UserHeader/>
-  </Suspense>
+  <NMessageProvider>
+    <Suspense>
+      <UserHeader/>
+    </Suspense>
+  </NMessageProvider>
   <div class="comment-container vw100">
     456
   </div>

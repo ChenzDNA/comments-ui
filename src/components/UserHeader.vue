@@ -1,17 +1,59 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import MarkdownView from "./MarkdownView.vue";
-import { NButton, NInput, NInputGroup, NInputGroupLabel } from 'naive-ui';
+import { MessageOptions, NButton, NInput, NInputGroup, NInputGroupLabel, useMessage } from 'naive-ui';
 import { useUserStore } from "../store/user";
 
 const flag = ref<'input' | 'view' | 'user'>('user')
 
-const content = ref('# we can talk with markdown!')
+const content = ref('')
 const userStore = useUserStore()
+const message = useMessage();
+let messageOptions = { duration: 2000 } as MessageOptions
 
 const username = ref('')
 const password = ref('')
+const nickname = ref('')
+
+function flush() {
+  username.value = ''
+  password.value = ''
+  nickname.value = ''
+}
+
 const opt = ref<0 | 1>(0)
+const changeNickname = ref<0 | 1>(0)
+const changePassword = ref<0 | 1>(0)
+
+await userStore.t()
+
+const optClick = {
+  0: async () => {
+    const res = await userStore.login(username.value, password.value)
+    flush()
+    res && message.error(res, messageOptions)
+  },
+  1: async () => {
+    const res = await userStore.register(username.value, password.value)
+    flush()
+    res && message.error(res, messageOptions)
+  },
+  2: async () => {
+    flush()
+    userStore.logout()
+  },
+  3: async () => {
+    const res = await userStore.updateNickname(nickname.value)
+    flush()
+    res && message.error(res, messageOptions)
+  },
+  4: async () => {
+    const res = await userStore.updatePassword(password.value)
+    flush()
+    res && message.error(res, messageOptions)
+  }
+}
+
 
 </script>
 
@@ -37,30 +79,50 @@ const opt = ref<0 | 1>(0)
         maxlength="16384"
         show-count
         class="beautify-scrollbar"
-        placeholder="write your comment here"/>
+        placeholder="# we can talk with markdown!"/>
     </template>
     <template v-else-if="flag==='view'">
       <MarkdownView :content="content" class="markdown-view beautify-scrollbar"/>
     </template>
     <template v-else-if="flag==='user'">
-      <n-input-group class="user-input position-relative" ref="inputUsername"
-                     :class="opt===0?'state-register-inputs':'state-login-inputs'">
-        <n-input-group-label>username:</n-input-group-label>
-        <n-input type="text" v-model:value="username" placeholder="账号" maxlength="20" clearable
-                 :show-count="opt===1"/>
-      </n-input-group>
-      <n-input-group style="top: 20px" class="user-input position-relative" ref="inputPassword"
-                     :class="opt===0?'state-register-inputs':'state-login-inputs'">
-        <n-input-group-label>password:</n-input-group-label>
-        <n-input type="password" v-model:value="password" show-password-on="mousedown" placeholder="密码" clearable/>
-      </n-input-group>
-      <div style="position: absolute;top: 170px;width: 100vw;left: 0;">
-        <n-button ref="buttonLogin" :class="opt===0?'state-register-buttons':'state-login-buttons'">
-          {{ opt === 0 ? '登&emsp;录' : '注&emsp;册' }}
-        </n-button>
-        <n-button quaternary @click="opt^=1" class="position-absolute right-10" ref="buttonSwitch"
-                  :class="opt===0?'state-login-buttons':'state-register-buttons'">
-          <b>去{{ opt === 0 ? '注册' : '登录' }}</b>
+      <div v-if="!userStore.hasLogin">
+        <n-input-group class="user-input position-relative" ref="inputUsername"
+                       :class="opt===0?'state-register-inputs':'state-login-inputs'">
+          <n-input-group-label>username:</n-input-group-label>
+          <n-input type="text" v-model:value="username" placeholder="账号" maxlength="20" clearable
+                   :show-count="opt===1"/>
+        </n-input-group>
+        <n-input-group style="top: 20px" class="user-input position-relative" ref="inputPassword"
+                       :class="opt===0?'state-register-inputs':'state-login-inputs'">
+          <n-input-group-label>password:</n-input-group-label>
+          <n-input @keydown.enter="optClick[opt]" type="password" v-model:value="password" show-password-on="mousedown"
+                   placeholder="密码" clearable/>
+        </n-input-group>
+        <div style="position: absolute;top: 170px;width: 100vw;left: 0;">
+          <n-button @click="optClick[opt]" ref="buttonLogin"
+                    :class="opt===0?'state-register-buttons':'state-login-buttons'">
+            {{ opt === 0 ? '登&emsp;录' : '注&emsp;册' }}
+          </n-button>
+          <n-button quaternary @click="opt^=1" class="position-absolute right-10" ref="buttonSwitch"
+                    :class="opt===0?'state-login-buttons':'state-register-buttons'">
+            <b><i style="border-bottom: 2px solid #495057">去{{ opt === 0 ? '注册' : '登录' }}</i></b>
+          </n-button>
+        </div>
+      </div>
+      <div v-else class="user-header__info">
+        <n-input v-show="changeNickname===1" v-model:value="nickname" class="user-input"
+                 placeholder="new nickname"/>
+        <n-button v-show="changeNickname===1" @click="optClick[3]();changeNickname^=1" type="primary">确认</n-button>
+        <br v-show="changeNickname===1"/>
+        <n-button @click="changeNickname^=1">修改昵称</n-button>
+        <br/>
+        <n-input v-show="changePassword===1" v-model:value="password" type="password" class="user-input"
+                 placeholder="new password" show-password-on="mousedown"/>
+        <n-button v-show="changePassword===1" @click="optClick[4]();changePassword^=1" type="primary">确认</n-button>
+        <br v-show="changePassword===1"/>
+        <n-button @click="changePassword^=1">修改密码</n-button>
+        <br/>
+        <n-button type="error" @click="optClick[2]" style="position: absolute;bottom: 0;right: 0">登&nbsp;出
         </n-button>
       </div>
     </template>
@@ -120,6 +182,8 @@ const opt = ref<0 | 1>(0)
   width: 90px;
 }
 
-
-
+.user-header__info > * {
+  margin-bottom: 11.5px;
+  margin-right: 10px;
+}
 </style>
