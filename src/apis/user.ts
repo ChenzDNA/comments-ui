@@ -28,7 +28,7 @@ export async function updateNickname(nickname: string): Promise<Res<number>> {
 
 export async function updatePassword(password: string): Promise<Res<number>> {
   return await req({
-    url: '/user/updateNickname',
+    url: '/user/updatePassword',
     method: 'POST',
     data: { password },
   }, ContentType.FORM_DATA) as Res<number>
