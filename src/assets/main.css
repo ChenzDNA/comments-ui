@@ -1,5 +1,6 @@
-* {
-    color: #495057;
+body {
+    margin: 0;
+    padding: 0;
 }
 
 .vw100 {
