@@ -1,13 +1,13 @@
 export interface Entity {
-  id: number
-  ctime: number
-  mtime: number
+  id?: number
+  ctime?: number
+  mtime?: number
 }
 
 export interface User extends Entity {
   nickname: string
-  username: string
-  password: string
+  username?: string
+  password?: string
 }
 
 export interface Comment extends Entity {

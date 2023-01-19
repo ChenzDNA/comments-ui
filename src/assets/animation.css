@@ -1,0 +1,60 @@
+
+@keyframes to-login-buttons {
+    from {
+        left: 10px;
+        right: calc(100vw - 80px);
+    }
+    to {
+        right: 10px;
+        left: calc(100vw - 80px);
+    }
+}
+
+@keyframes to-register-buttons {
+    from {
+        right: 10px;
+        left: calc(100vw - 80px);
+    }
+    to {
+        left: 10px;
+        right: calc(100vw - 80px);
+    }
+}
+
+@keyframes to-login-inputs {
+    from {
+        left: 0;
+    }
+    to {
+        left: calc(40vw - 20px);
+    }
+}
+
+@keyframes to-register-inputs {
+    from {
+        left: calc(40vw - 20px);
+    }
+    to {
+        left: 0;
+    }
+}
+
+.state-login-buttons {
+    animation: to-login-buttons 300ms ease-in-out;
+    animation-fill-mode: forwards;
+}
+
+.state-register-buttons {
+    animation: to-register-buttons 300ms ease-in-out;
+    animation-fill-mode: forwards;
+}
+
+.state-login-inputs {
+    animation: to-login-inputs 300ms ease-in-out;
+    animation-fill-mode: forwards;
+}
+
+.state-register-inputs {
+    animation: to-register-inputs 300ms ease-in-out;
+    animation-fill-mode: forwards;
+}

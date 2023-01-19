@@ -1,0 +1,29 @@
+* {
+    color: #495057;
+}
+
+.vw100 {
+    width: 100vw;
+}
+
+.beautify-scrollbar::-webkit-scrollbar {
+    width: 10px;
+    background-color: transparent;
+}
+
+.beautify-scrollbar::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+    background-color: rgba(0, 0, 0, .2);
+}
+
+.transition-300ms {
+    transition: 300ms;
+}
+
+.position-absolute {
+    position: absolute;
+}
+
+.position-relative {
+    position: relative;
+}
