@@ -5,14 +5,12 @@ export default async function req(config: AxiosRequestConfig, type: ContentType<
   const instance = axios.create({
     timeout: 3000,
     baseURL: '/api',
-    headers: { Authentication: localStorage.getItem('t'), 'Content-Type': type.value }
+    headers: { Authorization: localStorage.getItem('t'), 'Content-Type': type.value }
   });
 
   instance.interceptors.response.use((value) => {
-    const authentication = value.headers['Authentication'];
-    if (authentication) {
-      localStorage.setItem('t', authentication)
-    }
+    const authorization = value.headers['authorization'];
+    authorization && localStorage.setItem('t', authorization)
     return value.data
   })
 
