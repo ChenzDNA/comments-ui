@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import * as userApi from "../apis/user";
+import * as UserApi from "../apis/user";
 import { Res, User } from "../interface";
 
 export const useUserStore = defineStore('user', {
@@ -11,15 +11,15 @@ export const useUserStore = defineStore('user', {
   },
   actions: {
     async t() {
-      let userRes = await userApi.tokenLogin();
+      let userRes = await UserApi.tokenLogin();
       return this.resolveUserRes(userRes)
     },
     async login(username: string, password: string) {
-      const userRes = await userApi.login(username, password);
+      const userRes = await UserApi.login(username, password);
       return this.resolveUserRes(userRes)
     },
     async register(username: string, password: string) {
-      const userRes = await userApi.register(username, password)
+      const userRes = await UserApi.register(username, password)
       return this.resolveUserRes(userRes)
     },
     resolveUserRes(userRes: Res<User>) {
@@ -34,7 +34,7 @@ export const useUserStore = defineStore('user', {
       if (nickname && nickname === this.user.nickname) {
         return
       }
-      const res = await userApi.updateNickname(nickname);
+      const res = await UserApi.updateNickname(nickname);
       if (res.code !== 200) {
         return res.msg
       }
@@ -45,7 +45,7 @@ export const useUserStore = defineStore('user', {
       if (password) {
         return
       }
-      const res = await userApi.updatePassword(password);
+      const res = await UserApi.updatePassword(password);
       if (res.code !== 200) {
         return res.msg
       }

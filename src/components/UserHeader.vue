@@ -4,7 +4,7 @@ import MarkdownView from "./MarkdownView.vue";
 import { MessageOptions, NButton, NInput, NInputGroup, NInputGroupLabel, useMessage } from 'naive-ui';
 import { useUserStore } from "../store/user";
 
-const flag = ref<'input' | 'view' | 'user'>('user')
+const flag = ref<'input' | 'view' | 'user'>('input')
 
 const content = ref('')
 const userStore = useUserStore()
@@ -25,7 +25,10 @@ const opt = ref<0 | 1>(0)
 const changeNickname = ref<0 | 1>(0)
 const changePassword = ref<0 | 1>(0)
 
-await userStore.t()
+let tres = await userStore.t()
+if (tres) {
+  flag.value = 'user'
+}
 
 const optClick = {
   0: async () => {
@@ -79,7 +82,8 @@ const optClick = {
         maxlength="16384"
         show-count
         class="beautify-scrollbar"
-        placeholder="# we can talk with markdown!"/>
+        placeholder="# we can write with markdown!"/>
+      <n-button style="position: absolute;right: 22px;bottom: 43px">发送</n-button>
     </template>
     <template v-else-if="flag==='view'">
       <MarkdownView :content="content" class="markdown-view beautify-scrollbar"/>

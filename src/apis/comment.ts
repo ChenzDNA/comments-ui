@@ -1,13 +1,13 @@
 import req from "../utils/req";
-import { Comment, Res } from "../interface";
+import { Comments, Res, User } from "../interface";
 import { ContentType } from "../utils/contentType";
 
-export async function create(context: string, content: string, reply: number, parent: number): Promise<Res<Comment>> {
+export async function create(context: string, content: string, reply: number, parent: number): Promise<Res<Comments>> {
   return await req({
     url: '/comment/create',
     method: 'POST',
     data: { context, content, reply, parent },
-  }) as Res<Comment>
+  }) as Res<Comments>
 }
 
 export async function del(id: number): Promise<Res<number>> {
@@ -18,10 +18,10 @@ export async function del(id: number): Promise<Res<number>> {
   }, ContentType.FORM_DATA) as Res<number>
 }
 
-export async function getByContext(context: string): Promise<Res<number>> {
+export async function getByContext(context: string): Promise<Res<{ 'users': Array<User>, 'comments': Array<Comments> }>> {
   return await req({
     url: '/comment/getByContext',
     method: 'GET',
     params: { context }
-  }) as Res<number>
+  }) as Res<{ 'users': Array<User>, 'comments': Array<Comments> }>
 }
