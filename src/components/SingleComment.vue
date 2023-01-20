@@ -7,7 +7,6 @@ import { NButton } from 'naive-ui'
 import { useUserStore } from "../store/user";
 
 const props = defineProps<{ comment: CommentsView }>();
-console.log(props.comment)
 
 const userStore = useUserStore()
 const commentStore = useCommentStore();
