@@ -89,7 +89,7 @@ const optClick = {
         class="beautify-scrollbar"
         placeholder="# we can write with markdown!"/>
       <n-button :disabled="!userStore.hasLogin" style="position: absolute;right: 22px;bottom: 43px"
-                @click="commentStore.create(context,content,null,null)">发送
+                @click="commentStore.create('123',content,null,null)">发送
       </n-button>
     </template>
     <template v-else-if="flag==='view'">

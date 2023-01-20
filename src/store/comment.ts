@@ -19,7 +19,7 @@ export const useCommentStore = defineStore('comment', {
       }
       const userStore = useUserStore();
       this.userMap.set(userStore.user.id, userStore.user)
-      this.commentList.push(res.data)
+      this.commentList.unshift(res.data)
       this.commentMap.set(res.data.id, res.data)
       return null
     },
@@ -55,6 +55,10 @@ export const useCommentStore = defineStore('comment', {
       let res = new Array<CommentsView>()
       for (const comment of state.commentList) {
         let subComments = new Array<CommentsView>()
+        if (!comment.subComments) {
+          res.push({ user: state.userMap.get(comment.user)!, comment: comment, subComments })
+          continue
+        }
         for (const sub of comment.subComments) {
           subComments.push({ user: state.userMap.get(sub.user)!, comment: sub, subComments: [] })
         }
@@ -65,7 +69,7 @@ export const useCommentStore = defineStore('comment', {
     count(state): number {
       let res = 0
       for (const comment of state.commentList) {
-        res += comment.subComments.length
+        comment.subComments && (res += comment.subComments.length)
       }
       res += state.commentList.length
       return res
