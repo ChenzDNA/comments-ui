@@ -11,6 +11,9 @@ marked.setOptions({
   pedantic: false,
   async: true,
   highlight(code: string, language: string): string {
+    if (!language) {
+      return code
+    }
     return hljs.highlight(code, { language, ignoreIllegals: true }).value
   }
 })
@@ -20,9 +23,5 @@ const result = computed(() => {
 </script>
 
 <template>
-  <div v-html="result"></div>
+  <div v-html="result" style="overflow-x: auto;overflow-y: auto"></div>
 </template>
-
-<style scoped>
-
-</style>

@@ -24,6 +24,7 @@ function flush() {
   username.value = ''
   password.value = ''
   nickname.value = ''
+  content.value = ''
 }
 
 const opt = ref<0 | 1>(0)
@@ -59,6 +60,11 @@ const optClick = {
     const res = await userStore.updatePassword(password.value)
     flush()
     res && message.error(res, messageOptions)
+  },
+  5: async () => {
+    const res = await commentStore.create('123', content.value, null as unknown as number, null as unknown as number)
+    flush()
+    res && message.error(res, messageOptions)
   }
 }
 
@@ -89,7 +95,7 @@ const optClick = {
         class="beautify-scrollbar"
         placeholder="# we can write with markdown!"/>
       <n-button :disabled="!userStore.hasLogin" style="position: absolute;right: 22px;bottom: 43px"
-                @click="commentStore.create('123',content,null,null)">发送
+                @click="optClick[5]">发送
       </n-button>
     </template>
     <template v-else-if="flag==='view'">
