@@ -1,31 +1,43 @@
 <script setup lang="ts">
 import UserHeader from './components/UserHeader.vue'
 import { NMessageProvider } from 'naive-ui'
+import CommentContainer from "./components/CommentContainer.vue";
+import { ref } from "vue";
 
-if (window.parent !== window) {
-  function loop() {
-    window.parent.frames[0].frameElement!.setAttribute('height', String(document.body.scrollHeight))
-    setTimeout(loop, 500)
-  }
+let host = ''
+let context = ref('')
 
-  loop()
+function loop() {
+  window.parent.postMessage(`${document.body.scrollWidth}:${document.body.scrollHeight}`, host)
+  setTimeout(loop, 1000)
 }
 
-
+window.addEventListener('message', (e) => {
+  if (e.origin === window.origin) {
+    return
+  }
+  host = e.data
+  loop()
+})
 </script>
 
 <template>
   <NMessageProvider>
     <Suspense>
-      <UserHeader/>
+      <template #default>
+        <UserHeader :context="context"/>
+      </template>
+      <template #fallback>
+        <p>用户组件加载中...</p>
+      </template>
     </Suspense>
   </NMessageProvider>
-  <div class="comment-container vw100">
-    456
-  </div>
+  <Suspense>
+    <template #default>
+      <CommentContainer/>
+    </template>
+    <template #fallback>
+      <p>评论列表加载中...</p>
+    </template>
+  </Suspense>
 </template>
-
-<style scoped>
-
-
-</style>

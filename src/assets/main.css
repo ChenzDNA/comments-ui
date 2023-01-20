@@ -1,6 +1,9 @@
 body {
     margin: 0;
     padding: 0;
+    box-sizing: border-box;
+    max-width: 300px;
+    overflow-x: hidden;
 }
 
 .vw100 {
@@ -14,7 +17,12 @@ body {
 
 .beautify-scrollbar::-webkit-scrollbar-thumb {
     border-radius: 10px;
-    background-color: rgba(0, 0, 0, .2);
+    border: 2px solid transparent;
+    box-shadow: 8px 0 0 #A5ADB7 inset;
+}
+
+.beautify-scrollbar::-webkit-scrollbar-thumb:hover {
+    box-shadow: 8px 0 0 #858585 inset;
 }
 
 .transition-300ms {

@@ -1,0 +1,56 @@
+<script setup lang="ts">
+import { CommentsView } from "../interface";
+import MarkdownView from "./MarkdownView.vue";
+import dayjs from "dayjs";
+import { useCommentStore } from "../store/comment";
+import { NButton } from 'naive-ui'
+import { useUserStore } from "../store/user";
+
+const props = defineProps<{ comment: CommentsView }>();
+console.log(props.comment)
+
+const userStore = useUserStore()
+const commentStore = useCommentStore();
+
+if (props.comment.comment.reply && props.comment.comment.reply !== props.comment.comment.parent) {
+  props.comment.comment.content = `\`回复: ${commentStore.getStoreUserByCommentId(props.comment.comment.reply).nickname}\`\n\n${props.comment.comment.content}`
+}
+
+function formatDate(time: number): string {
+  return dayjs(time).format('YYYY/MM/DD HH:ss')
+}
+</script>
+
+<template>
+  <div>
+    <div class="comment-item">
+      <div style="width: 90px;text-align: center;margin-right: 10px">
+        <p :title="comment.user.nickname"><b>{{ comment.user.nickname }}</b></p>
+      </div>
+      <div style="flex: 1">
+        <MarkdownView class="comment-content beautify-scrollbar" :content="comment.comment.content"/>
+        <n-button v-if="comment.user.id===userStore.user.id" @click="commentStore.del(comment.comment.id)">删除
+        </n-button>
+        <p style="float: right">{{ formatDate(comment.comment.ctime) }}</p>
+      </div>
+    </div>
+    <SingleComment style="margin-left: 30px" v-for="item of comment.subComments" :comment="item"
+                   :key="item.comment.id"/>
+  </div>
+</template>
+
+<style scoped>
+.comment-item {
+  display: flex;
+}
+
+.comment-content {
+  border: 1px solid #495057;
+  box-sizing: border-box;
+  padding: 10px;
+  border-radius: 10px;
+  max-height: 300px;
+  margin-bottom: 10px;
+  overflow-y: auto;
+}
+</style>

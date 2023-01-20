@@ -3,12 +3,17 @@ import { ref } from "vue";
 import MarkdownView from "./MarkdownView.vue";
 import { MessageOptions, NButton, NInput, NInputGroup, NInputGroupLabel, useMessage } from 'naive-ui';
 import { useUserStore } from "../store/user";
+import { useCommentStore } from "../store/comment";
+
+const props = defineProps<{ context: string }>();
 
 const flag = ref<'input' | 'view' | 'user'>('input')
 
 const content = ref('')
+
 const userStore = useUserStore()
-const message = useMessage();
+const commentStore = useCommentStore()
+const message = useMessage()
 let messageOptions = { duration: 2000 } as MessageOptions
 
 const username = ref('')
@@ -83,7 +88,9 @@ const optClick = {
         show-count
         class="beautify-scrollbar"
         placeholder="# we can write with markdown!"/>
-      <n-button style="position: absolute;right: 22px;bottom: 43px">发送</n-button>
+      <n-button :disabled="!userStore.hasLogin" style="position: absolute;right: 22px;bottom: 43px"
+                @click="commentStore.create(context,content,null,null)">发送
+      </n-button>
     </template>
     <template v-else-if="flag==='view'">
       <MarkdownView :content="content" class="markdown-view beautify-scrollbar"/>
@@ -92,13 +99,13 @@ const optClick = {
       <div v-if="!userStore.hasLogin">
         <n-input-group class="user-input position-relative" ref="inputUsername"
                        :class="opt===0?'state-register-inputs':'state-login-inputs'">
-          <n-input-group-label>username:</n-input-group-label>
+          <n-input-group-label>账号:</n-input-group-label>
           <n-input type="text" v-model:value="username" placeholder="账号" maxlength="20" clearable
                    :show-count="opt===1"/>
         </n-input-group>
         <n-input-group style="top: 20px" class="user-input position-relative" ref="inputPassword"
                        :class="opt===0?'state-register-inputs':'state-login-inputs'">
-          <n-input-group-label>password:</n-input-group-label>
+          <n-input-group-label>密码:</n-input-group-label>
           <n-input @keydown.enter="optClick[opt]" type="password" v-model:value="password" show-password-on="mousedown"
                    placeholder="密码" clearable/>
         </n-input-group>
@@ -183,7 +190,7 @@ const optClick = {
 }
 
 .user-input > div:nth-child(1) {
-  width: 90px;
+  width: 55px;
 }
 
 .user-header__info > * {

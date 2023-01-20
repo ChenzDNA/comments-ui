@@ -1,12 +1,14 @@
 import { defineStore } from "pinia";
 import { Comments, CommentsView, User } from "../interface";
 import * as CommentApi from '../apis/comment'
+import { useUserStore } from "./user";
 
 export const useCommentStore = defineStore('comment', {
   state() {
     return {
       commentList: [] as Array<Comments>,
-      userList: [] as Array<User>
+      userMap: new Map<number, User>(),
+      commentMap: new Map<number, Comments>(),
     }
   },
   actions: {
@@ -15,7 +17,10 @@ export const useCommentStore = defineStore('comment', {
       if (res.code !== 200) {
         return res.msg
       }
+      const userStore = useUserStore();
+      this.userMap.set(userStore.user.id, userStore.user)
       this.commentList.push(res.data)
+      this.commentMap.set(res.data.id, res.data)
       return null
     },
     async del(id: number) {
@@ -25,29 +30,45 @@ export const useCommentStore = defineStore('comment', {
       }
       let ind = this.commentList.findIndex((item) => item.id == id);
       this.commentList.splice(ind, 1)
+      this.commentMap.delete(id)
       return null
     },
     async getByContext(context: string) {
       const res = await CommentApi.getByContext(context);
       this.commentList = res.data.comments
-      this.userList = res.data.users
+      for (const user of res.data.users) {
+        this.userMap.set(user.id, user)
+      }
+      for (const comment of res.data.comments) {
+        this.commentMap.set(comment.id, comment)
+        for (const subComment of comment.subComments) {
+          this.commentMap.set(subComment.id, subComment)
+        }
+      }
+    },
+    getStoreUserByCommentId(id: number): User {
+      return this.userMap.get(this.commentMap.get(id)!.user)!
     },
   },
   getters: {
     contextComments(state): Array<CommentsView> {
       let res = new Array<CommentsView>()
-      let userMap = new Map<number, User>()
-      for (const user of state.userList) {
-        userMap.set(user.id, user)
-      }
       for (const comment of state.commentList) {
         let subComments = new Array<CommentsView>()
         for (const sub of comment.subComments) {
-          subComments.push({ user: userMap.get(sub.user)!, comment: sub, subComments: [] })
+          subComments.push({ user: state.userMap.get(sub.user)!, comment: sub, subComments: [] })
         }
-        res.push({ user: userMap.get(comment.user)!, comment: comment, subComments })
+        res.push({ user: state.userMap.get(comment.user)!, comment: comment, subComments })
       }
       return res;
+    },
+    count(state): number {
+      let res = 0
+      for (const comment of state.commentList) {
+        res += comment.subComments.length
+      }
+      res += state.commentList.length
+      return res
     }
   }
 })
