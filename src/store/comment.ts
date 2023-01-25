@@ -23,13 +23,19 @@ export const useCommentStore = defineStore('comment', {
       this.commentMap.set(res.data.id, res.data)
       return null
     },
-    async del(id: number) {
+    async del(id: number, parent: number) {
       const res = await CommentApi.del(id)
       if (res.code !== 200) {
         return res.msg
       }
-      let ind = this.commentList.findIndex((item) => item.id == id);
-      this.commentList.splice(ind, 1)
+      if (!parent) {
+        let ind = this.commentList.findIndex((item) => item.id === id)
+        this.commentList.splice(ind, 1)
+      } else {
+        const p = this.commentList.find((item) => item.id === parent)!
+        let ind = p.subComments.findIndex((item) => item.id === id)
+        p.subComments.splice(ind, 1)
+      }
       this.commentMap.delete(id)
       return null
     },
@@ -47,7 +53,11 @@ export const useCommentStore = defineStore('comment', {
       }
     },
     getStoreUserByCommentId(id: number): User {
-      return this.userMap.get(this.commentMap.get(id)!.user)!
+      let comment = this.commentMap.get(id)
+      if (!comment) {
+        return null!
+      }
+      return this.userMap.get(comment!.user)!
     },
   },
   getters: {
