@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { computed, ref } from "vue";
 import MarkdownView from "./MarkdownView.vue";
 import { MessageOptions, NButton, NInput, NInputGroup, NInputGroupLabel, useMessage } from 'naive-ui';
 import { useUserStore } from "../store/user";
@@ -27,6 +27,13 @@ function flush() {
   content.value = ''
 }
 
+const inputPlaceholder = computed(() => {
+  if (commentStore.reply) {
+    return `回复 ${commentStore.getStoreUserByCommentId(commentStore.reply).nickname} ：`
+  }
+  return '# 支持 Markdown 语法格式'
+})
+
 const opt = ref<0 | 1>(0)
 const changeNickname = ref<0 | 1>(0)
 const changePassword = ref<0 | 1>(0)
@@ -40,12 +47,20 @@ const optClick = {
   0: async () => {
     const res = await userStore.login(username.value, password.value)
     flush()
-    res && message.error(res, messageOptions)
+    if (res) {
+      message.error(res, messageOptions)
+    } else {
+      flag.value = "input"
+    }
   },
   1: async () => {
     const res = await userStore.register(username.value, password.value)
     flush()
-    res && message.error(res, messageOptions)
+    if (res) {
+      message.error(res, messageOptions)
+    } else {
+      flag.value = "input"
+    }
   },
   2: async () => {
     flush()
@@ -62,13 +77,11 @@ const optClick = {
     res && message.error(res, messageOptions)
   },
   5: async () => {
-    const res = await commentStore.create('123', content.value, null as unknown as number, null as unknown as number)
+    const res = await commentStore.create(props.context, content.value, commentStore.reply, commentStore.parent)
     flush()
     res && message.error(res, messageOptions)
-  }
+  },
 }
-
-
 </script>
 
 <template>
@@ -93,7 +106,10 @@ const optClick = {
         maxlength="16384"
         show-count
         class="beautify-scrollbar"
-        placeholder="# we can write with markdown!"/>
+        :placeholder="inputPlaceholder"/>
+      <n-button v-if="commentStore.reply" style="position: absolute;right: 90px;bottom: 43px"
+                @click="commentStore.flush()">取消回复
+      </n-button>
       <n-button :disabled="!userStore.hasLogin" style="position: absolute;right: 22px;bottom: 43px"
                 @click="optClick[5]">发送
       </n-button>

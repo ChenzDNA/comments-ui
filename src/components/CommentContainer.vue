@@ -2,8 +2,26 @@
 import { useCommentStore } from "../store/comment";
 import SingleComment from "./SingleComment.vue";
 
-const commentStore = useCommentStore();
-await commentStore.getByContext('123')
+const props = defineProps<{ context: string }>()
+
+const commentStore = useCommentStore()
+
+function waitForContext() {
+  return new Promise<void>((res) => {
+    function w() {
+      if (props.context !== '') {
+        commentStore.getByContext(props.context)
+        res()
+        return
+      }
+      setTimeout(w, 200)
+    }
+
+    w()
+  })
+}
+
+await waitForContext()
 </script>
 
 <template>

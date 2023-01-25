@@ -33,7 +33,10 @@ const markdownContent = computed(() => {
       </div>
       <div style="flex: 1;width: 0;min-width: 0">
         <MarkdownView class="comment-content beautify-scrollbar" :content="markdownContent"/>
-        <n-button tertiary type="error" v-if="comment.user.id===userStore.user.id"
+        <n-button style="margin-right: 10px" @click="commentStore.replyTo(comment.comment.id,comment.comment.parent)">
+          回复
+        </n-button>
+        <n-button v-if="comment.user.id===userStore.user.id" style="color: red"
                   @click="commentStore.del(comment.comment.id,comment.comment.parent)">删除
         </n-button>
         <p style="float: right">{{ formatDate(comment.comment.ctime) }}</p>

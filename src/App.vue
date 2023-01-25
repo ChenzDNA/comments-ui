@@ -4,19 +4,22 @@ import { NMessageProvider } from 'naive-ui'
 import CommentContainer from "./components/CommentContainer.vue";
 import { ref } from "vue";
 
-let host = ''
+let host = ref('')
 let context = ref('')
 
 function loop() {
-  window.parent.postMessage(`${document.body.scrollWidth}:${document.body.scrollHeight}`, host)
-  setTimeout(loop, 1000)
+  window.parent.postMessage(document.body.scrollHeight, host.value)
+  setTimeout(loop, 200)
 }
 
 window.addEventListener('message', (e) => {
   if (e.origin === window.origin) {
     return
   }
-  host = e.data
+  let split = e.data.split('\n');
+  console.log('split', split)
+  host.value = split[0]
+  context.value = split[1]
   loop()
 })
 </script>
@@ -34,7 +37,7 @@ window.addEventListener('message', (e) => {
   </NMessageProvider>
   <Suspense>
     <template #default>
-      <CommentContainer/>
+      <CommentContainer :context="context"/>
     </template>
     <template #fallback>
       <p>评论列表加载中...</p>

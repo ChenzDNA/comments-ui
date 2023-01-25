@@ -9,6 +9,8 @@ export const useCommentStore = defineStore('comment', {
       commentList: [] as Array<Comments>,
       userMap: new Map<number, User>(),
       commentMap: new Map<number, Comments>(),
+      reply: null as unknown as number,
+      parent: null as unknown as number,
     }
   },
   actions: {
@@ -19,8 +21,17 @@ export const useCommentStore = defineStore('comment', {
       }
       const userStore = useUserStore();
       this.userMap.set(userStore.user.id, userStore.user)
-      this.commentList.unshift(res.data)
       this.commentMap.set(res.data.id, res.data)
+      if (res.data.parent) {
+        let find = this.commentMap.get(res.data.parent)!
+        if (!find.subComments) {
+          find.subComments = []
+        }
+        find.subComments.push(res.data)
+      } else {
+        this.commentList.unshift(res.data)
+      }
+      this.flush()
       return null
     },
     async del(id: number, parent: number) {
@@ -58,6 +69,14 @@ export const useCommentStore = defineStore('comment', {
         return null!
       }
       return this.userMap.get(comment!.user)!
+    },
+    flush() {
+      this.parent = null as unknown as number
+      this.reply = null as unknown as number
+    },
+    replyTo(reply: number, parent: number) {
+      this.reply = reply
+      this.parent = parent
     },
   },
   getters: {
