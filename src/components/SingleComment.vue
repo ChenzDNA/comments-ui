@@ -5,19 +5,24 @@ import dayjs from "dayjs";
 import { useCommentStore } from "../store/comment";
 import { NButton } from 'naive-ui'
 import { useUserStore } from "../store/user";
+import { computed } from "vue";
 
 const props = defineProps<{ comment: CommentsView }>();
 
 const userStore = useUserStore()
-const commentStore = useCommentStore();
-
-if (props.comment.comment.reply && props.comment.comment.reply !== props.comment.comment.parent) {
-  props.comment.comment.content = `\`回复: ${commentStore.getStoreUserByCommentId(props.comment.comment.reply).nickname}\`\n\n${props.comment.comment.content}`
-}
+const commentStore = useCommentStore()
 
 function formatDate(time: number): string {
-  return dayjs(time).format('YYYY/MM/DD HH:ss')
+  return dayjs(time).format('YYYY/MM/DD HH:mm')
 }
+
+const markdownContent = computed(() => {
+  if (props.comment.comment.reply && props.comment.comment.reply !== props.comment.comment.parent) {
+    let user = commentStore.getStoreUserByCommentId(props.comment.comment.reply)
+    return `**\`${user ? '回复: ' + user.nickname : '回复的评论已删除'}\`**\n\n${props.comment.comment.content}`
+  }
+  return props.comment.comment.content
+})
 </script>
 
 <template>
@@ -27,8 +32,9 @@ function formatDate(time: number): string {
         <p :title="comment.user.nickname"><b>{{ comment.user.nickname }}</b></p>
       </div>
       <div style="flex: 1;width: 0;min-width: 0">
-        <MarkdownView class="comment-content beautify-scrollbar" :content="comment.comment.content"/>
-        <n-button v-if="comment.user.id===userStore.user.id" @click="commentStore.del(comment.comment.id)">删除
+        <MarkdownView class="comment-content beautify-scrollbar" :content="markdownContent"/>
+        <n-button tertiary type="error" v-if="comment.user.id===userStore.user.id"
+                  @click="commentStore.del(comment.comment.id,comment.comment.parent)">删除
         </n-button>
         <p style="float: right">{{ formatDate(comment.comment.ctime) }}</p>
       </div>
