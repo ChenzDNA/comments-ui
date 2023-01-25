@@ -103,26 +103,25 @@ const optClick = {
     </template>
     <template v-else-if="flag==='user'">
       <div v-if="!userStore.hasLogin">
-        <n-input-group class="user-input position-relative" ref="inputUsername"
+        <n-input-group class="user-input position-relative"
                        :class="opt===0?'state-register-inputs':'state-login-inputs'">
           <n-input-group-label>账号:</n-input-group-label>
           <n-input type="text" v-model:value="username" placeholder="账号" maxlength="20" clearable
                    :show-count="opt===1"/>
         </n-input-group>
-        <n-input-group style="top: 20px" class="user-input position-relative" ref="inputPassword"
+        <n-input-group style="top: 20px" class="user-input position-relative"
                        :class="opt===0?'state-register-inputs':'state-login-inputs'">
           <n-input-group-label>密码:</n-input-group-label>
           <n-input @keydown.enter="optClick[opt]" type="password" v-model:value="password" show-password-on="mousedown"
                    placeholder="密码" clearable/>
         </n-input-group>
         <div style="position: absolute;top: 170px;width: 100vw;left: 0;">
-          <n-button @click="optClick[opt]" ref="buttonLogin"
-                    :class="opt===0?'state-register-buttons':'state-login-buttons'">
+          <n-button @click="optClick[opt]" :class="opt===0?'state-register-buttons':'state-login-buttons'">
             {{ opt === 0 ? '登&emsp;录' : '注&emsp;册' }}
           </n-button>
-          <n-button quaternary @click="opt^=1" class="position-absolute right-10" ref="buttonSwitch"
+          <n-button quaternary @click="opt^=1" class="position-absolute right-10"
                     :class="opt===0?'state-login-buttons':'state-register-buttons'">
-            <b><i style="border-bottom: 2px solid #495057">去{{ opt === 0 ? '注册' : '登录' }}</i></b>
+            <b><i style="border-bottom: 2px solid #495057">{{ opt === 0 ? '去注册' : '去登录' }}</i></b>
           </n-button>
         </div>
       </div>
