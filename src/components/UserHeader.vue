@@ -166,7 +166,7 @@ const optClick = {
   background-color: #fff7e0;
   box-sizing: border-box;
   padding: 10px;
-  border-radius: 10px 10px 0 0;
+  border-radius: 10px;
   height: 245px;
   position: relative;
 }
