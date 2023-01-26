@@ -27,6 +27,10 @@ body {
     box-shadow: 0 0 0 10px #858585 inset;
 }
 
+.beautify-scrollbar::-webkit-scrollbar-corner {
+    background-color: rgba(0, 0, 0, 0);
+}
+
 .transition-300ms {
     transition: 300ms;
 }
