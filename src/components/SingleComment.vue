@@ -29,7 +29,8 @@ const markdownContent = computed(() => {
   <div>
     <div class="comment-item">
       <div style="width: 90px;min-width:90px;text-align: center;margin-right: 10px">
-        <p :title="comment.user.nickname"><b>{{ comment.user.nickname }}</b></p>
+        <p :title="comment.user.nickname" :style="{color:comment.user.username===commentStore.author?'#0A8CDE':'#495057'}">
+          <b>{{ `${comment.user.nickname}${comment.user.username === commentStore.author ? ' (站长)' : ''}` }}</b></p>
       </div>
       <div style="flex: 1;width: 0;min-width: 0">
         <MarkdownView class="comment-content beautify-scrollbar" :content="markdownContent"/>

@@ -18,10 +18,10 @@ export async function del(id: number): Promise<Res<number>> {
   }, ContentType.FORM_DATA) as Res<number>
 }
 
-export async function getByContext(context: string): Promise<Res<{ 'users': Array<User>, 'comments': Array<Comments> }>> {
+export async function getByContext(context: string): Promise<Res<{ 'users': Array<User>, 'comments': Array<Comments>, 'author': string }>> {
   return await req({
     url: '/comment/getByContext',
     method: 'GET',
     params: { context }
-  }) as Res<{ 'users': Array<User>, 'comments': Array<Comments> }>
+  }) as Res<{ 'users': Array<User>, 'comments': Array<Comments>, 'author': string }>
 }

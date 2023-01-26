@@ -11,6 +11,7 @@ export const useCommentStore = defineStore('comment', {
       commentMap: new Map<number, Comments>(),
       reply: null as unknown as number,
       parent: null as unknown as number,
+      author: '',
     }
   },
   actions: {
@@ -51,7 +52,11 @@ export const useCommentStore = defineStore('comment', {
       return null
     },
     async getByContext(context: string) {
-      const res = await CommentApi.getByContext(context);
+      const res = await CommentApi.getByContext(context)
+      if (res.code !== 200) {
+        return res.msg
+      }
+      this.author = res.data.author
       this.commentList = res.data.comments
       for (const user of res.data.users) {
         this.userMap.set(user.id, user)
