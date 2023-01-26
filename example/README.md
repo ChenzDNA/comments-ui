@@ -1,5 +1,7 @@
 # 嵌入已有的系统中
 
+具体部署完成的样式可以参考[我的博客](https://www.chenz.icu/post/Qpcv2CRwU/)
+
 1. 部署 CommentS 前端。
 
 2. 在 parent frame 里嵌入如下代码：
