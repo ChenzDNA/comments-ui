@@ -4,9 +4,14 @@ import { marked } from "marked";
 import hljs from "highlight.js";
 
 const props = defineProps<{ content: string }>()
+const render = new marked.Renderer()
+
+render.image = function () {
+  return '<p style="color: red">图片渲染已禁用。</p>'
+}
 
 marked.setOptions({
-  renderer: new marked.Renderer,
+  renderer: render,
   gfm: true,
   pedantic: false,
   async: true,
