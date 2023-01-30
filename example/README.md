@@ -8,6 +8,7 @@
 
 注意把 `<url to your CommentS frontend>` 替换成你的 CommentS 前端 url
 ```html
+
 <iframe id="commentsFrame" src="<url to your CommentS frontend>" style="width: 100%;border: none;"></iframe>
 <script>
     const commentsFrame = document.getElementById('commentsFrame')
@@ -15,6 +16,7 @@
     window.addEventListener('message', (e) => {
         if (commentsFrame.src.startsWith(e.origin) && typeof e.data == 'number') {
             rec = true
+            // 如果出现纵向滚动条就把 +1 改大一点
             commentsFrame.setAttribute('height', e.data + 1)
         }
     })
@@ -28,7 +30,7 @@
         // context 为区分每个评论所在的文章，这里是取 pathname 的最后一部分。
         // 根据不同的系统，你也可以自定义为其他值，比如说 param 中的某个值。
         let context = a.pop()
-        window.frames[0].postMessage(`${location.origin}\n${context}`, commentsFrame.src)
+        window.frames[0].postMessage({ type: 'init', origin: location.origin, context }, commentsFrame.src)
         setTimeout(send, 1000)
     }
 
