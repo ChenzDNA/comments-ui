@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from "vue";
+import { computed, ref, watch } from "vue";
 import MarkdownView from "./MarkdownView.vue";
 import { MessageOptions, NButton, NInput, NInputGroup, NInputGroupLabel, useMessage } from 'naive-ui';
 import { useUserStore } from "../store/user";
@@ -39,9 +39,15 @@ const changeNickname = ref<0 | 1>(0)
 const changePassword = ref<0 | 1>(0)
 
 let tres = await userStore.t()
-if (tres) {
+if (tres && !userStore.adapted) {
   flag.value = 'user'
 }
+
+watch(userStore, (u) => {
+  if (u.adapted && flag.value === 'user') {
+    flag.value = 'input'
+  }
+}, { deep: true })
 
 const optClick = {
   0: async () => {
@@ -90,7 +96,7 @@ const optClick = {
       <div class="button" @click="flag='input'">输入</div>
       |
       <div class="button" @click="flag='view'">预览</div>
-      <b class="button" style="float: right" @click="flag='user'">{{
+      <b class="button" style="float: right" @click="flag='user'" v-if="!userStore.adapted">{{
           userStore.hasLogin ? userStore.user.nickname : '未登录'
         }}</b>
     </div>

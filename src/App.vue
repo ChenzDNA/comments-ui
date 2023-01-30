@@ -3,9 +3,24 @@ import UserHeader from './components/UserHeader.vue'
 import { NMessageProvider } from 'naive-ui'
 import CommentContainer from "./components/CommentContainer.vue";
 import { ref } from "vue";
+import { useUserStore } from "./store/user";
 
 let host = ref('')
 let context = ref('')
+
+const dispatcher = {
+  init(data: any) {
+    host.value = data.origin
+    context.value = data.context
+  },
+  adapt(data: any) {
+    useUserStore().adaptLogin(data.user)
+    localStorage.setItem('t', data.token)
+  },
+  logout() {
+    useUserStore().logout()
+  }
+}
 
 function loop() {
   window.parent.postMessage(document.body.scrollHeight, host.value)
@@ -16,10 +31,8 @@ window.addEventListener('message', (e) => {
   if (e.origin === window.origin) {
     return
   }
-  let split = e.data.split('\n');
-  console.log('split', split)
-  host.value = split[0]
-  context.value = split[1]
+  // @ts-ignore
+  dispatcher[e.data.type](e.data)
   loop()
 })
 </script>

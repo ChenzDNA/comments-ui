@@ -6,7 +6,8 @@ export const useUserStore = defineStore('user', {
   state() {
     return {
       hasLogin: false,
-      user: {} as User
+      user: {} as User,
+      adapted: false,
     }
   },
   actions: {
@@ -55,6 +56,11 @@ export const useUserStore = defineStore('user', {
       localStorage.removeItem('t')
       this.user = {} as User
       this.hasLogin = false
+    },
+    adaptLogin(u: User) {
+      Object.assign(this.user, u)
+      this.adapted = true
+      this.hasLogin = true
     }
   }
 })
