@@ -7,8 +7,8 @@ import { NButton } from 'naive-ui'
 import { useUserStore } from "../store/user";
 import { computed } from "vue";
 
-const props = defineProps<{ comment: CommentsView }>();
-
+const props = defineProps<{ comment: CommentsView, top: false }>();
+// console.log('isTop', props.isTop)
 const userStore = useUserStore()
 const commentStore = useCommentStore()
 
@@ -32,13 +32,18 @@ const markdownContent = computed(() => {
         <p :title="comment.user.nickname"
            class="comment-user"
            :style="{color:comment.user.username===commentStore.author?'#0A8CDE':'#495057'}">
-          <b>{{ `${comment.user.nickname}${comment.user.username === commentStore.author ? ' (Author)' : ''}` }}</b>
+          <b>{{ comment.user.nickname }}</b>
+          <b v-if="comment.user.username===commentStore.author"><br/>(Author)</b>
         </p>
       </div>
       <div style="flex: 1;width: 0;min-width: 0">
         <MarkdownView class="comment-content beautify-scrollbar" :content="markdownContent"/>
         <n-button style="margin-right: 10px" @click="commentStore.replyTo(comment.comment.id,comment.comment.parent)">
           回复
+        </n-button>
+        <n-button style="margin-right: 10px"
+                  v-if="userStore.user.username===commentStore.author&&comment.comment.parent===null"
+                  @click="commentStore.top(comment.comment.id)">置顶
         </n-button>
         <n-button v-if="comment.user.id===userStore.user.id" style="color: red"
                   @click="commentStore.del(comment.comment.id,comment.comment.parent)">删除

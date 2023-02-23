@@ -29,6 +29,17 @@ await waitForContext()
     <span>共 {{ commentStore.count }} 条评论</span>
   </div>
   <hr style="width: calc(100vw - 20px);margin-left: 10px"/>
-  <SingleComment style="width: 100vw;box-sizing: border-box;padding: 10px"
-                 v-for="(item) of commentStore.contextComments" :comment="item" :key="item.comment.id"/>
+  <single-comment class="comment" v-if="commentStore.topComment!==-1" top
+                  :comment="commentStore.contextComments.find(item=>item.comment.id===commentStore.topComment)"/>
+  <single-comment class="comment"
+                  v-for="(item) of commentStore.contextComments.filter(i=>i.comment.id!==commentStore.topComment)"
+                  :comment="item" :key="item.comment.id"/>
 </template>
+
+<style scoped>
+.comment {
+  width: 100vw;
+  box-sizing: border-box;
+  padding: 10px;
+}
+</style>

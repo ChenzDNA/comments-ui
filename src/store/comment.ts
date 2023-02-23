@@ -12,6 +12,7 @@ export const useCommentStore = defineStore('comment', {
       reply: null as unknown as number,
       parent: null as unknown as number,
       author: '',
+      topComment: -1,
     }
   },
   actions: {
@@ -56,6 +57,7 @@ export const useCommentStore = defineStore('comment', {
       if (res.code !== 200) {
         return res.msg
       }
+      this.topComment = res.data.top
       this.author = res.data.author
       this.commentList = res.data.comments
       for (const user of res.data.users) {
@@ -66,6 +68,15 @@ export const useCommentStore = defineStore('comment', {
         for (const subComment of comment.subComments) {
           this.commentMap.set(subComment.id, subComment)
         }
+      }
+    },
+    async top(id: number) {
+      const res = await CommentApi.top(id)
+      if (res.code !== 200) {
+        return res.msg
+      }
+      if (res.data > 0) {
+        this.topComment = id
       }
     },
     getStoreUserByCommentId(id: number): User {
