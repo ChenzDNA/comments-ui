@@ -16,6 +16,8 @@ export interface Comments extends Entity {
   reply: number
   parent: number
   user: number
+  likes: number
+  dislikes: number
   subComments: Array<Comments>
 }
 
@@ -29,4 +31,15 @@ export interface CommentsView {
   comment: Comments
   user: User
   subComments: Array<CommentsView>
+  like: boolean
+  dislike: boolean
+}
+
+export interface GetByContext {
+  users: Array<User>
+  top: number
+  userLike: Array<number>
+  userDislike: Array<number>
+  comments: Array<Comments>
+  author: string
 }

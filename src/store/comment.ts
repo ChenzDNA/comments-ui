@@ -1,6 +1,7 @@
 import { defineStore } from "pinia";
 import { Comments, CommentsView, User } from "../interface";
 import * as CommentApi from '../apis/comment'
+import * as LikeApi from '../apis/like'
 import { useUserStore } from "./user";
 
 export const useCommentStore = defineStore('comment', {
@@ -13,6 +14,8 @@ export const useCommentStore = defineStore('comment', {
       parent: null as unknown as number,
       author: '',
       topComment: -1,
+      userLikeMap: new Map<number, any>(),
+      userDisLikeMap: new Map<number, any>(),
     }
   },
   actions: {
@@ -63,6 +66,12 @@ export const useCommentStore = defineStore('comment', {
       for (const user of res.data.users) {
         this.userMap.set(user.id, user)
       }
+      for (const userLike of res.data.userLike) {
+        this.userLikeMap.set(userLike, {})
+      }
+      for (const dislike of res.data.userDislike) {
+        this.userDisLikeMap.set(dislike, {})
+      }
       for (const comment of res.data.comments) {
         this.commentMap.set(comment.id, comment)
         for (const subComment of comment.subComments) {
@@ -79,6 +88,47 @@ export const useCommentStore = defineStore('comment', {
         this.topComment = id
       }
     },
+    async like(cid: number, type: number) {
+      const res = await LikeApi.create(cid, type)
+      if (res.code !== 200) {
+        return res.msg
+      }
+      if (res.data < 1) {
+        return
+      }
+
+      const target = this.commentMap.get(cid);
+      if (type == 0) {
+        if (this.userLikeMap.delete(cid)) {
+          target!.likes -= 1
+        }
+        target!.dislikes += 1
+        this.userDisLikeMap.set(cid, {})
+      } else {
+        target!.likes += 1
+        this.userLikeMap.set(cid, {})
+        if (this.userDisLikeMap.delete(cid)) {
+          target!.dislikes -= 1
+        }
+      }
+    },
+    async deleteLike(cid: number) {
+      const res = await LikeApi.del(cid)
+      if (res.code !== 200) {
+        return res.msg
+      }
+      if (res.data < 1) {
+        return
+      }
+
+      const target = this.commentMap.get(cid)
+      if (this.userLikeMap.delete(cid)) {
+        target!.likes -= 1
+      } else if (this.userDisLikeMap.delete(cid)) {
+        target!.dislikes -= 1
+      }
+    },
+
     getStoreUserByCommentId(id: number): User {
       let comment = this.commentMap.get(id)
       if (!comment) {
@@ -101,13 +151,31 @@ export const useCommentStore = defineStore('comment', {
       for (const comment of state.commentList) {
         let subComments = new Array<CommentsView>()
         if (!comment.subComments) {
-          res.push({ user: state.userMap.get(comment.user)!, comment: comment, subComments })
+          res.push({
+            user: state.userMap.get(comment.user)!,
+            comment: comment,
+            subComments,
+            like: state.userLikeMap.has(comment.id),
+            dislike: state.userLikeMap.has(comment.id)
+          })
           continue
         }
         for (const sub of comment.subComments) {
-          subComments.push({ user: state.userMap.get(sub.user)!, comment: sub, subComments: [] })
+          subComments.push({
+            user: state.userMap.get(sub.user)!,
+            comment: sub,
+            subComments: [],
+            like: this.userLikeMap.has(sub.id),
+            dislike: this.userDisLikeMap.has(sub.id),
+          })
         }
-        res.push({ user: state.userMap.get(comment.user)!, comment: comment, subComments })
+        res.push({
+          user: state.userMap.get(comment.user)!,
+          comment: comment,
+          subComments,
+          like: this.userLikeMap.has(comment.id),
+          dislike: this.userDisLikeMap.has(comment.id),
+        })
       }
       return res;
     },
@@ -118,6 +186,6 @@ export const useCommentStore = defineStore('comment', {
       }
       res += state.commentList.length
       return res
-    }
+    },
   }
 })
