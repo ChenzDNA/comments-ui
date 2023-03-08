@@ -1,6 +1,6 @@
 # CommentS 前端页面
 
-[backend](https://github.com/ChenzDNA/CommentS)
+[backend](https://github.com/ZhengDNA/CommentS)
 
 [example](example/README.md)
 
