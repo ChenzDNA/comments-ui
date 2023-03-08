@@ -7,7 +7,7 @@ import { NButton, NTag } from 'naive-ui'
 import { useUserStore } from "../store/user";
 import { computed } from "vue";
 
-const props = defineProps<{ comment: CommentsView, top: false }>();
+const props = defineProps<{ comment: CommentsView, top: boolean }>();
 // console.log('isTop', props.isTop)
 const userStore = useUserStore()
 const commentStore = useCommentStore()
@@ -107,7 +107,7 @@ const markdownContent = computed(() => {
       </div>
     </div>
     <SingleComment style="margin-left: 30px" v-for="item of comment.subComments" :comment="item"
-                   :key="item.comment.id"/>
+                   :key="item.comment.id" :top="false"/>
   </div>
 </template>
 

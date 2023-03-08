@@ -33,7 +33,7 @@ await waitForContext()
                   :comment="commentStore.contextComments.find(item=>item.comment.id===commentStore.topComment)"/>
   <single-comment class="comment"
                   v-for="(item) of commentStore.contextComments.filter(i=>i.comment.id!==commentStore.topComment)"
-                  :comment="item" :key="item.comment.id"/>
+                  :comment="item" :key="item.comment.id" :top="false"/>
 </template>
 
 <style scoped>
