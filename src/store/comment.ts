@@ -97,7 +97,7 @@ export const useCommentStore = defineStore('comment', {
         return
       }
 
-      const target = this.commentMap.get(cid);
+      const target = this.commentMap.get(cid)
       if (type == 0) {
         if (this.userLikeMap.delete(cid)) {
           target!.likes -= 1
@@ -105,11 +105,11 @@ export const useCommentStore = defineStore('comment', {
         target!.dislikes += 1
         this.userDisLikeMap.set(cid, {})
       } else {
-        target!.likes += 1
-        this.userLikeMap.set(cid, {})
         if (this.userDisLikeMap.delete(cid)) {
           target!.dislikes -= 1
         }
+        target!.likes += 1
+        this.userLikeMap.set(cid, {})
       }
     },
     async deleteLike(cid: number) {
@@ -156,7 +156,7 @@ export const useCommentStore = defineStore('comment', {
             comment: comment,
             subComments,
             like: state.userLikeMap.has(comment.id),
-            dislike: state.userLikeMap.has(comment.id)
+            dislike: state.userDisLikeMap.has(comment.id)
           })
           continue
         }

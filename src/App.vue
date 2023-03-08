@@ -47,13 +47,13 @@ window.addEventListener('message', (e) => {
         <p>用户组件加载中...</p>
       </template>
     </Suspense>
+    <Suspense>
+      <template #default>
+        <CommentContainer :context="context"/>
+      </template>
+      <template #fallback>
+        <p>评论列表加载中...</p>
+      </template>
+    </Suspense>
   </NMessageProvider>
-  <Suspense>
-    <template #default>
-      <CommentContainer :context="context"/>
-    </template>
-    <template #fallback>
-      <p>评论列表加载中...</p>
-    </template>
-  </Suspense>
 </template>

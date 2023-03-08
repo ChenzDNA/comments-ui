@@ -3,7 +3,7 @@ import { CommentsView } from "../interface";
 import MarkdownView from "./MarkdownView.vue";
 import dayjs from "dayjs";
 import { useCommentStore } from "../store/comment";
-import { NButton, NTag } from 'naive-ui'
+import { NButton, NTag, useMessage } from 'naive-ui'
 import { useUserStore } from "../store/user";
 import { computed } from "vue";
 
@@ -11,6 +11,7 @@ const props = defineProps<{ comment: CommentsView, top: boolean }>();
 // console.log('isTop', props.isTop)
 const userStore = useUserStore()
 const commentStore = useCommentStore()
+const message = useMessage()
 
 function formatDate(time: number): string {
   return dayjs(time).format('YYYY/MM/DD HH:mm')
@@ -23,6 +24,13 @@ const markdownContent = computed(() => {
   }
   return props.comment.comment.content
 })
+
+async function postLikeOrDislike(cond: boolean, type: number) {
+  const msg = cond ? await commentStore.deleteLike(props.comment.comment.id) : await commentStore.like(props.comment.comment.id, type)
+  if (msg) {
+    message.error(msg, { duration: 2000 })
+  }
+}
 </script>
 
 <template>
@@ -48,7 +56,7 @@ const markdownContent = computed(() => {
       <div style="flex: 1;width: 0;min-width: 0;">
         <MarkdownView class="comment-content beautify-scrollbar" :content="markdownContent"/>
         <n-button title="点赞"
-                  @click="comment.like?commentStore.deleteLike(comment.comment.id):commentStore.like(comment.comment.id,1)">
+                  @click="postLikeOrDislike(comment.like,1)">
           <svg v-if="!comment.like" class="icon" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" width="20"
                height="20">
             <path
@@ -63,7 +71,7 @@ const markdownContent = computed(() => {
           <b>&nbsp;{{ comment.comment.likes }}</b>
         </n-button>
         <n-button title="点踩"
-                  @click="comment.dislike?commentStore.deleteLike(comment.comment.id):commentStore.like(comment.comment.id,0)">
+                  @click="postLikeOrDislike(comment.dislike,0)">
           <svg v-if="!comment.dislike" class="icon" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg"
                width="20"
                height="20">
